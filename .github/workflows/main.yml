@@ -6,7 +6,7 @@ on:
       - master
   workflow_dispatch:
 jobs:
-  build_java_code:
+  Test_java_code:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
@@ -16,7 +16,23 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: build with mvn 
-        run : mvn package
+      - name: run tests with mvn
+        run: mvn test
+  code_quality_java:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+      - name: setup java version 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: build code
+        run: mvn package
+  #create a setup to run SonarQube analysis using SonarScanner for maven
+  #analysis wii be perfromed on the code and result will be sent to SonarQube cloud
+      - name: Run SonarQube analysis
+        run: mvn sonar:sonar -Dsonar.projectKey=sonar-demo-may15_sonar-jenkins-demo -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=sonar-demo-may15 -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
 
