@@ -19,6 +19,9 @@ jobs:
       - name: run tests with mvn
         run: mvn test
   code_quality_java:
+   #needs used to define the dependency between jobs, this job will run only after the successful completion of Test_java_code job
+   #we can also specifiy multiple jobsin needs section if we have multiple jobs and we want to run this job after the successful completion of all those jobs
+    needs: Test_java_code
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
@@ -33,6 +36,10 @@ jobs:
   #create a setup to run SonarQube analysis using SonarScanner for maven
   #analysis wii be perfromed on the code and result will be sent to SonarQube cloud
       - name: Run SonarQube analysis
-        run: mvn sonar:sonar -Dsonar.projectKey=sonar-demo-may15_sonar-jenkins-demo -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=sonar-demo-may15 -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        #run: mvn sonar:sonar -Dsonar.projectKey=sonar-demo-may15_sonar-jenkins-demo -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=sonar-demo-may15 -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar -Dsonar.projectKey=sonar-demo-may15_sonar-jenkins-demo -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=sonar-demo-may15 -Dsonar.login=$SONAR_TOKEN
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # this will automatically take the workflow during run time and pass it to the sonar cloud for authentication and authorization
 
 
